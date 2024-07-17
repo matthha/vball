@@ -4,7 +4,9 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { rootReducer } from '../Reducer.js'
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -25,13 +27,19 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
+  const store = configureStore({
+    reducer: rootReducer, 
+  });
 
   return (
+  <Provider store={store}>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+      <Stack >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="edit-contact" options={{ headerShown: false }}/>
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
+  </Provider>
   );
 }

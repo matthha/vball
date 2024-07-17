@@ -1,11 +1,21 @@
 import { Image, StyleSheet, Platform } from 'react-native';
-
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { gettingData } from '../data/Action';
 
 export default function HomeScreen() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // let async temp = await JSON.parse(myGames)
+    // setWord(temp)
+    dispatch(gettingData())
+    },[])
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
