@@ -13,53 +13,43 @@ import { updateContact } from './data/Action.js'
 // import { FlatList } from 'react-native-gesture-handler';
 
 
-export default function EditContact(props) {
+export default function EditContactModal(props) {
   // const contacts = useSelector((state)=>state.myContacts)
   // const { navigation, route } = props;
-  const {firstName, lastName, skill, id} = useLocalSearchParams();
+  // const {firstName, lastName, skill, id} = useLocalSearchParams();
   const [cons, setCons] = useState([{}])
-  const [first, setFirst] = useState(firstName)
-  const [second, setSecond] = useState(lastName)
-  const [skills, setSkill] = useState(skill)
+  const [first, setFirst] = useState(props.firstName)
+  const [second, setSecond] = useState(props.lastName)
+  const [skills, setSkill] = useState(props.skill)
+  const id = props.id
   const dispatch = useDispatch()
   
   useEffect(() => {
     // let async temp = await JSON.parse(myGames)
     // setWord(temp)
-    console.log('There are other screens?', router.state)
-    console.log('person is', firstName)
-    console.log(router)
+    console.log('Opened the modal')
   },[])
 
 
   return ( 
-       // Page 
-    <ThemedView style={styles.titleContainer} >
-      {/*  Header  */}
-    <ThemedView style={{padding:12}} darkColor='#333' lightColor={'#5bb'}>
-      <ThemedText type="title">Edit Contact</ThemedText>
-    </ThemedView>
-
-      {/*  Button Row  */}
-    <View style={styles.cont}>
-    <Pressable onPress={()=> router.back()}>
-      <View style={{padding:8, backgroundColor:'gray', borderRadius: 12}}>
-        <ThemedText style={{color:'white', fontSize:22}}>Back</ThemedText>
-      </View>
-    </Pressable>
-    
-    <Pressable onPress={()=> {
-      dispatch(updateContact({first:first, last:second, skill:skills, id:id}))
-      
-      router.back()
-    }}>
-      <View style={{padding:8, backgroundColor:'green', borderRadius: 12}}>
-        <ThemedText style={{color:'white', fontSize:22}}>Save</ThemedText>
-      </View>
-    </Pressable>
-    </View>
-
-    {/*  Fields  */}
+    <ThemedView style={styles.cont}>
+        <View style={styles.bcont}>
+        <Pressable onPress={()=> console.log('MAKE ME A DELETE')}>
+          <View style={{padding:8, backgroundColor:'gray', borderRadius: 12}}>
+            <ThemedText style={{color:'white', fontSize:22}}>Back</ThemedText>
+          </View>
+        </Pressable>
+        
+        <Pressable onPress={()=> {
+          dispatch(updateContact({first:first, last:second, skill:skills, id:id}))
+          props.setVis(false)
+          
+        }}>
+          <View style={{padding:8, backgroundColor:'green', borderRadius: 12}}>
+            <ThemedText style={{color:'white', fontSize:22}}>Save</ThemedText>
+          </View>
+        </Pressable>
+        </View>
     <ThemedView>
     <ThemedText style={styles.desc}>First Name</ThemedText>
     <ThemedTextInput darkColor={'#998'} style={styles.input} value={first} onChangeText={setFirst}/>
@@ -72,7 +62,7 @@ export default function EditContact(props) {
     <ThemedText style={styles.desc}>Skill Level</ThemedText>
     <ThemedTextInput darkColor={'#998'} inputMode='numeric' style={styles.input} value={skills} onChangeText={setSkill}/>
     </ThemedView>
-    </ThemedView>
+   </ThemedView>
   );
 }
 
@@ -85,9 +75,19 @@ const styles = StyleSheet.create({
     },
     cont: {
       display:'flex',
-      flexDirection:'row',
+      flex:1,
+      flexDirection:'column',
       gap: 18,
       justifyContent:'flex-end',
+      // marginHorizontal: 15,
+      // borderWidth: .5,
+      // borderColor:'red'
+    },
+    bcont: {
+      display:'flex',
+      flexDirection:'row',
+      gap: 18,
+      justifyContent:'space-between',
       marginHorizontal: 15,
     },
     input: {

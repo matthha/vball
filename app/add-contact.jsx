@@ -9,26 +9,26 @@ import { ThemedView } from '@/components/ThemedView';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { ThemedTextInput } from '@/components/ThemedInput';
-import { updateContact } from './data/Action.js'
+import { addContact, updateContact } from './data/Action.js'
 // import { FlatList } from 'react-native-gesture-handler';
 
 
-export default function EditContact(props) {
+export default function AddContact(props) {
   // const contacts = useSelector((state)=>state.myContacts)
   // const { navigation, route } = props;
-  const {firstName, lastName, skill, id} = useLocalSearchParams();
+//   const {firstName, lastName, skill, id} = useLocalSearchParams();
   const [cons, setCons] = useState([{}])
-  const [first, setFirst] = useState(firstName)
-  const [second, setSecond] = useState(lastName)
-  const [skills, setSkill] = useState(skill)
+  const [first, setFirst] = useState('')
+  const [second, setSecond] = useState('')
+  const [skills, setSkill] = useState('')
   const dispatch = useDispatch()
   
   useEffect(() => {
     // let async temp = await JSON.parse(myGames)
     // setWord(temp)
-    console.log('There are other screens?', router.state)
-    console.log('person is', firstName)
-    console.log(router)
+   //  console.log('There are other screens?', router.state)
+   //  console.log('person is', firstName)
+   //  console.log(router)
   },[])
 
 
@@ -47,9 +47,8 @@ export default function EditContact(props) {
         <ThemedText style={{color:'white', fontSize:22}}>Back</ThemedText>
       </View>
     </Pressable>
-    
     <Pressable onPress={()=> {
-      dispatch(updateContact({first:first, last:second, skill:skills, id:id}))
+      dispatch(addContact({first:first, last:second, skill:skills}))
       
       router.back()
     }}>

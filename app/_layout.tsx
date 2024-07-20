@@ -9,16 +9,19 @@ import { configureStore } from '@reduxjs/toolkit';
 import { rootReducer } from '../Reducer.js'
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
+
     if (loaded) {
       SplashScreen.hideAsync();
     }
@@ -27,16 +30,17 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
+
   const store = configureStore({
     reducer: rootReducer, 
   });
-
   return (
   <Provider store={store}>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="edit-contact" options={{ headerShown: false }}/>
+        <Stack.Screen name="add-contact" options={{ headerShown: false }}/>
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>

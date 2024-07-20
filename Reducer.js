@@ -1,15 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const LOAD_CONTACTS = 'LOAD_CONTACTS';
 const UPDATE_CONTACT = 'UPDATE_CONTACT';
 const LOAD_DATA = 'LOAD_DATA';
-
-const loadContacts = (state, contacts) => {
-   return {
-     ...state, 
-     myContacts: contacts
-   }
- }
+const ADD_CONTACT = 'ADD_CONTACT';
 
  const updateContact = (state, contact) => {
   let {myContacts} = state;
@@ -22,17 +15,37 @@ const loadContacts = (state, contacts) => {
   };
  }
 
+ const addContact = (state, newcontact) => {
+  let {myContacts, nextKey} = state;
+  const conID = {...newcontact, id: nextKey.toString()}
+  let newContacts = [...myContacts];
+  newContacts.push(conID)
+  console.log('newcontacts is',newContacts)
+  // AsyncStorage.setItem('contacts')
+  AsyncStorage.setItem('contacts', JSON.stringify(newContacts));
+  let newNextKey = nextKey + 1
+  return {
+    ...state,
+    myContacts: newContacts,
+    nextKey: newNextKey
+  };
+ }
+
  const initContacts = [
   { first: 'Kyle', last: 'Mosz', skill: '4', id:'0'},
 ];
 
-
 const loadData = (state, data) => {
+  // console.log('hi')
+  // console.log('length is ', data.length)
+  let num = Number(data[data.length-1].id) + 1
+  // console.log('nextKey is ',num)
   let {myContacts} = state;
   let newContacts = data;
   return {
     ...state,
-    myContacts:newContacts
+    myContacts:newContacts,
+    nextKey:num
   }
 };
 
@@ -42,15 +55,16 @@ const loadData = (state, data) => {
 
  const initialState = {
    myContacts: initContacts,
+   nextKey: initLastKey
 
  }
 
  function rootReducer(state=initialState, action) {
    switch (action.type) {
-      case LOAD_CONTACTS:
-        return loadContacts(state, action.payload.contacts);
       case UPDATE_CONTACT:
         return updateContact(state, action.payload.contact);
+      case ADD_CONTACT:
+        return addContact(state, action.payload.contact);
       case LOAD_DATA:
         return loadData(state, action.payload.data);
       default: 
@@ -58,4 +72,4 @@ const loadData = (state, data) => {
    }
  }
 
- export { rootReducer, LOAD_DATA, LOAD_CONTACTS, UPDATE_CONTACT}
+ export { rootReducer, LOAD_DATA, UPDATE_CONTACT, ADD_CONTACT}

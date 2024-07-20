@@ -13,7 +13,7 @@ export default function HomeScreen() {
   useEffect(() => {
     // let async temp = await JSON.parse(myGames)
     // setWord(temp)
-    dispatch(gettingData())
+    // dispatch(gettingData())
     },[])
 
   return (

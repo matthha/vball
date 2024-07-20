@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LOAD_CONTACTS, LOAD_DATA, UPDATE_CONTACT } from "../../Reducer";
+import { ADD_CONTACT, LOAD_CONTACTS, LOAD_DATA, UPDATE_CONTACT } from "../../Reducer";
 
 // ** Action.js is where we do the Async stuff.
 // ** Then we use the data to dispatch what we
@@ -27,11 +27,11 @@ const loadData = async () => {
   try {
     console.log('LD`s try')
     const value = await AsyncStorage.getItem('contacts');
-    console.log(value)
+    // console.log(value)
     if (value !== null) {
       // value previously stored
       newer = JSON.parse(value)
-      console.log('storage value is',value)
+      // console.log('storage value is',value)
       // return 
       return newer
     } else {
@@ -58,28 +58,6 @@ const gettingData = () => {
   }
 }
 
-
-
-const loadGames = (myUser) => {
-   return async (dispatch) => {
-     let q = query(collection(db, 'games'), where('players', 'array-contains', `${myUser}`));
-     
-     let querySnapshot = await getDocs(q)
-     // console.log((querySnapshot.docs).length)
-     let newGamesList = querySnapshot.docs.map(docSnap => {
-       return {
-         ...docSnap.data(),
-         key: docSnap.id
-       }
-     })
-     dispatch({
-       type: LOAD_GAMES,
-       payload: {
-         newGames: newGamesList
-       }
-     });
-   }
- }
 
 const loadContacts = () => {
    return async (dispatch) => {
@@ -110,11 +88,20 @@ const loadContacts = () => {
 
 const updateContact = (contact) => {
 
-
-
   return (dispatch) => {
     dispatch({
       type: UPDATE_CONTACT,
+      payload: {
+        contact: contact
+      }
+    })
+  } 
+}
+const addContact = (contact) => {
+  console.log('add`s contact is',contact)
+  return (dispatch) => {
+    dispatch({
+      type: ADD_CONTACT,
       payload: {
         contact: contact
       }
@@ -133,4 +120,4 @@ const updateGame = (game) => {
   }
 }
 
-export {loadContacts, updateContact, gettingData}
+export {loadContacts, updateContact, gettingData, addContact}
