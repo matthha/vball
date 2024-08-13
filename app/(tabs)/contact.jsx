@@ -6,10 +6,11 @@ import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { ThemedTextInput } from '@/components/ThemedInput';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
-import { Modal } from 'react-native-web';
+import { Modal, ScrollView } from 'react-native-web';
 import EditContactModal from '../edit-contact-modal';
 // import { FlatList } from 'react-native-gesture-handler';
 
@@ -19,6 +20,7 @@ export default function Contact() {
   const [cons, setCons] = useState([{}])
   const [editing, setEditing] = useState('Nancy')
   const [modalVisible, setModalVisible] = useState(false);
+  const [search, setSearch] = useState('')
   const [first, setFirst] = useState('')
   const [second, setSecond] = useState('')
   const [skills, setSkills] = useState('')
@@ -50,6 +52,20 @@ export default function Contact() {
     
   },[contacts])
 
+  let sortCons = contacts.toSorted((a,b)=>{
+    let y = a['first'].toLowerCase().trim().localeCompare(b['first'].toLowerCase().trim())
+    if (y === 0 ) {
+      y = a['last'].toLowerCase().trim().localeCompare(b['last'].toLowerCase().trim())
+    }
+
+    return(y)
+  })
+  
+  // Used in the search bar to find contacts by first name
+  const filtered = sortCons
+  .map((item) => item)
+  .filter((person) => person.first.toLowerCase().startsWith(search.toLowerCase()))
+
 
   return ( 
     // Page 
@@ -67,7 +83,7 @@ export default function Contact() {
       {/*  Buttons Container  */}
     <View style={styles.cont}>
       {/* Show Modal Button */}
-    <Pressable
+    {/* <Pressable
         style={({ pressed }) => [
           { opacity: pressed ? 0.5 : 1.0 }
         ]}
@@ -75,7 +91,18 @@ export default function Contact() {
         <View style={{padding:8, backgroundColor:'#14b', borderRadius: 12}}>
         <ThemedText style={{color:'white', fontSize:22}}>Show Modal</ThemedText>
       </View>
-      </Pressable>
+      </Pressable> */}
+    <View style={{flex:1, flexDirection:'row'}}>
+    <ThemedTextInput darkColor={'#998'} style={styles.input} value={search} onChangeText={setSearch}/>
+
+    <Pressable style={({ pressed }) => [
+    { opacity: pressed ? 0.5 : 1.0 }
+  ]} onPress={()=> setSearch('')}>
+      <View style={{padding:8,marginRight:22, backgroundColor:'gray', borderRadius: 12}}>
+        <ThemedText style={{color:'black', fontSize:22}}>X</ThemedText>
+      </View>
+    </Pressable>
+    </View>
 
     {/* https://reactnative.dev/docs/pressable */}
   
@@ -90,13 +117,16 @@ export default function Contact() {
     </View>  
   
     {/*  List of Contacts */}
-    <ThemedView style={{paddingHorizontal:18}}>
+    <ThemedView style={{paddingHorizontal:18,paddingBottom:15,flex:1}}>
+      {/* <ScrollView> */}
       <FlatList
-        data={contacts}
+        data={filtered}
+        ListEmptyComponent={<ThemedText>No contacts yet. Add someone.</ThemedText>}
         renderItem={({item,index})=>{
           return(
             <Pressable 
-            style={[{margin:9},({ pressed }) => [
+            key={item.id}
+            style={[{margin:6},({ pressed }) => [
               { opacity: pressed ? 0.5 : 1.0 }
             ]]} 
             onPress={()=> (
@@ -107,14 +137,15 @@ export default function Contact() {
               setModalVisible(!modalVisible)
             )
             }>
-            <ThemedView style={{marginVertical:2, padding:5,borderRadius:8}} darkColor='#666' lightColor='#7bd'>
-            <ThemedText key={index} style={{textDecoration:'none'}}>{item.first} {item.last}, {item.skill}</ThemedText>
+            <ThemedView style={{marginVertical:2, padding:5,borderRadius:8}} darkColor='#242' lightColor='#1c1'>
+            <ThemedText style={{textDecoration:'none'}}>{item.first} {item.last}, {item.skill}</ThemedText>
             </ThemedView>
             </Pressable>
           )
         }}
 
       />
+      {/* </ScrollView> */}
     </ThemedView>
     </ThemedView>
   );
@@ -157,6 +188,9 @@ const styles = StyleSheet.create({
    marginTop: 12,
    backgroundColor:'rgba(76, 175, 80, 0.3)',
  },
+ textStyle: {
+  color:'white',
+ },
   modalView: {
     margin: 10,
     opacity:10,
@@ -174,4 +208,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  input: {
+    height: 40,
+    marginHorizontal: 12,
+    borderWidth: .5,
+    borderRadius:1,
+    padding: 10,
+  },
+  
 });

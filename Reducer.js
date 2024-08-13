@@ -3,10 +3,49 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const UPDATE_CONTACT = 'UPDATE_CONTACT';
 const LOAD_DATA = 'LOAD_DATA';
 const ADD_CONTACT = 'ADD_CONTACT';
+const DELETE_CONTACT = 'DELETE_CONTACT';
+const ADD_PLAYER = 'ADD_PLAYER';
+const REMOVE_PLAYER = 'REMOVE_PLAYER';
 
  const updateContact = (state, contact) => {
   let {myContacts} = state;
   let newContacts = myContacts.map(elem=>elem.id===contact.id?contact:elem);
+  AsyncStorage.setItem('contacts', JSON.stringify(newContacts));
+  return {
+    ...state,
+    myContacts: newContacts
+  };
+ }
+
+ const addPlayer = (state, theId, theTeam) => {
+  const {teams} = state;
+  let newTeams = [...teams];
+  let editedTeam = [...newTeams[theTeam]]
+  editedTeam.push(theId)
+  newTeams[theTeam]=editedTeam;
+  AsyncStorage.setItem('teams', JSON.stringify(newTeams));
+
+  return {
+    ...state,
+    teams: newTeams
+  }
+ }
+
+ const removePlayer = (state, theId) => {
+  let {teams} = state;
+  let editedTeams= []
+  // map through the teams and filter through each team to remove player and push each filtered team into editedTeams
+  teams.map(team=>{editedTeams.push(team.filter(player=>{return (player!==theId)}))});
+
+  AsyncStorage.setItem('teams', JSON.stringify(editedTeams));
+  return {
+    ...state,
+    teams: editedTeams
+  }
+ }
+ const deleteContact = (state, contact) => {
+  let {myContacts} = state;
+  let newContacts = myContacts.filter(elem=>elem.id!==contact.id);
   // AsyncStorage.setItem('contacts')
   AsyncStorage.setItem('contacts', JSON.stringify(newContacts));
   return {
@@ -21,7 +60,6 @@ const ADD_CONTACT = 'ADD_CONTACT';
   let newContacts = [...myContacts];
   newContacts.push(conID)
   console.log('newcontacts is',newContacts)
-  // AsyncStorage.setItem('contacts')
   AsyncStorage.setItem('contacts', JSON.stringify(newContacts));
   let newNextKey = nextKey + 1
   return {
@@ -34,18 +72,19 @@ const ADD_CONTACT = 'ADD_CONTACT';
  const initContacts = [
   { first: 'Kyle', last: 'Mosz', skill: '4', id:'0'},
 ];
+const initTeams = [[]]
 
 const loadData = (state, data) => {
-  // console.log('hi')
-  // console.log('length is ', data.length)
-  let num = Number(data[data.length-1].id) + 1
-  // console.log('nextKey is ',num)
-  let {myContacts} = state;
-  let newContacts = data;
+  let teams = data[0]
+  let num = Number(teams[teams.length-1].id) + 1
+
+  let newContacts = data[0];
+  let previousTeams = data[1]
   return {
     ...state,
     myContacts:newContacts,
-    nextKey:num
+    nextKey:num,
+    teams: previousTeams
   }
 };
 
@@ -55,7 +94,8 @@ const loadData = (state, data) => {
 
  const initialState = {
    myContacts: initContacts,
-   nextKey: initLastKey
+   nextKey: initLastKey,
+   teams: initTeams
 
  }
 
@@ -63,8 +103,14 @@ const loadData = (state, data) => {
    switch (action.type) {
       case UPDATE_CONTACT:
         return updateContact(state, action.payload.contact);
+      case DELETE_CONTACT:
+        return deleteContact(state, action.payload.contact);
       case ADD_CONTACT:
         return addContact(state, action.payload.contact);
+      case ADD_PLAYER:
+        return addPlayer(state, action.payload.theId, action.payload.theTeam);
+      case REMOVE_PLAYER:
+        return removePlayer(state, action.payload.theId)
       case LOAD_DATA:
         return loadData(state, action.payload.data);
       default: 
@@ -72,4 +118,4 @@ const loadData = (state, data) => {
    }
  }
 
- export { rootReducer, LOAD_DATA, UPDATE_CONTACT, ADD_CONTACT}
+ export { rootReducer, LOAD_DATA, UPDATE_CONTACT, ADD_CONTACT, DELETE_CONTACT, ADD_PLAYER, REMOVE_PLAYER}

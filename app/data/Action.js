@@ -1,31 +1,32 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ADD_CONTACT, LOAD_CONTACTS, LOAD_DATA, UPDATE_CONTACT } from "../../Reducer";
+import { ADD_CONTACT, ADD_PLAYER, DELETE_CONTACT, LOAD_CONTACTS, LOAD_DATA, REMOVE_PLAYER, UPDATE_CONTACT } from "../../Reducer";
 
 // ** Action.js is where we do the Async stuff.
 // ** Then we use the data to dispatch what we
 // ** want the new state object to be in Reducer.js
 
 
-const storeData = async (value) => {
+const storeData = async (value, keyName) => {
   try {
-    console.log('value is', value)
+    // console.log('value is', value)
     const jsonValue = JSON.stringify(value);
-    console.log('json string is', jsonValue)
-    await AsyncStorage.setItem('contacts', jsonValue);
+    // console.log('json string is', jsonValue)
+    await AsyncStorage.setItem(keyName, jsonValue);
   } catch (e) {
     // saving error
-    console.log(e)
-    console.log('failed setting data')
+    // console.log(e)
+    // console.log('failed setting data')
   }
 };
 
 const loadData = async () => {
-  const initData = [
+  // Use initData to load the data with [0] being for myContacts and [1] being for teams.
+  let initData = [[
     {first: 'Sarah', last: 'Mosz', skill: '4', id:'0'},
-  ]
+  ],[[]]]
   // console.log('in Load Data')
   try {
-    console.log('LD`s try')
+    // console.log('LD`s try')
     const value = await AsyncStorage.getItem('contacts');
     // console.log(value)
     if (value !== null) {
@@ -33,18 +34,32 @@ const loadData = async () => {
       newer = JSON.parse(value)
       // console.log('storage value is',value)
       // return 
-      return newer
+      initData[0]=newer
     } else {
-      console.log('value was null')
-      AsyncStorage.setItem('contacts', JSON.stringify(initData))
-      return initData
+      // console.log('value was null')
+      AsyncStorage.setItem('contacts', JSON.stringify(initData[0]))
+      
     }
   } catch (e) {
     // error reading value
-    console.log('running the set')
-    await storeData(initData)
-    return initData
+    // console.log('running the set')
+    await storeData(initData[0], 'contacts')
   }
+  // For loading the teams
+  try {
+    const value = await AsyncStorage.getItem('teams');
+    if (value !== null) {
+      newer = JSON.parse(value)
+      initData[1]=newer
+    } else {
+      AsyncStorage.setItem('teams', JSON.stringify(initData[1]))
+      
+    }
+  } catch (e) {
+    await storeData(initData[1], 'teams')
+  }
+  console.log('initData is',initData)
+  return initData
 };
 
 
@@ -52,42 +67,30 @@ const loadData = async () => {
 const gettingData = () => {
   return async (dispatch) => {
     let mycons = await loadData();
-    console.log('data is', mycons)
+    // console.log('data is', mycons)
     // console.log('function', loadData())
     dispatch({type: LOAD_DATA, payload: {data: mycons}});
   }
 }
 
 
-const loadContacts = () => {
-   return async (dispatch) => {
-      if (localStorage.myContacts) {
-         dispatch({
-            type: LOAD_CONTACTS,
-            payload: {
-              newGames: localStorage.myContacts
-            }
-          });
-      } else {
+// const loadContacts = () => {
+//    return async (dispatch) => {
+//       if (localStorage.myContacts) {
+//          dispatch({
+//             type: LOAD_CONTACTS,
+//             payload: {
+//               newGames: localStorage.myContacts
+//             }
+//           });
+//       } else {
          
-      }
+//       }
 
-   }
-}
-
-
-
-// const updateContact = (state, contact) => {
-//   let {myContacts} = state;
-//   let newContacts = myContacts.map(elem=>elem.id===contact.id?contact:elem);
-//   return {
-//     ...state,
-//     myContacts: newContacts
-//   };
-//  }
+//    }
+// }
 
 const updateContact = (contact) => {
-
   return (dispatch) => {
     dispatch({
       type: UPDATE_CONTACT,
@@ -97,8 +100,17 @@ const updateContact = (contact) => {
     })
   } 
 }
+const deleteContact = (contact) => {
+  return (dispatch) => {
+    dispatch({
+      type: DELETE_CONTACT,
+      payload: {
+        contact: contact
+      }
+    })
+  } 
+}
 const addContact = (contact) => {
-  console.log('add`s contact is',contact)
   return (dispatch) => {
     dispatch({
       type: ADD_CONTACT,
@@ -108,16 +120,27 @@ const addContact = (contact) => {
     })
   } 
 }
-const updateGame = (game) => {
-  return async (dispatch) => {
-    setDoc(doc(db, 'games', game.key), game)
+
+const addPlayer = (id, team) => {
+  return (dispatch) => {
     dispatch({
-      type: UPDATE_GAME,
+      type: ADD_PLAYER,
       payload: {
-        newGame: game
+        theId: id,
+        theTeam: team
       }
-    });    
+    })
+  } 
+}
+const removePlayer = (id) => {
+  return (dispatch) => {
+    dispatch({
+      type: REMOVE_PLAYER,
+      payload: {
+        theId: id
+      }
+    })
   }
 }
 
-export {loadContacts, updateContact, gettingData, addContact}
+export { updateContact, gettingData, addContact, deleteContact, addPlayer, removePlayer }

@@ -26,27 +26,36 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Events',
+          title: 'How-To',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            <TabBarIcon name={focused ? 'book' : 'book-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="teams"
         options={{
-          title: 'Explore',
+          title: 'Team Setup',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'megaphone' : 'megaphone-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="contact"
         options={{
-          title: 'Contact',
+          title: 'Contacts',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="tourny"
+        options={{
+          title: 'Brackets',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'git-network' : 'git-network-outline'} color={color} />
           ),
         }}
       />

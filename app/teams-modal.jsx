@@ -13,15 +13,13 @@ import { deleteContact, updateContact } from './data/Action.js'
 // import { FlatList } from 'react-native-gesture-handler';
 
 
-export default function EditContactModal(props) {
+export default function TeamsModal(props) {
   // const contacts = useSelector((state)=>state.myContacts)
   // const { navigation, route } = props;
   // const {firstName, lastName, skill, id} = useLocalSearchParams();
+  const [amountTeams, setAmountTeams] = useState('');
+  const [amountPlayers, setAmountPlayers] = useState('');
   const [cons, setCons] = useState([{}])
-  const [first, setFirst] = useState(props.firstName)
-  const [second, setSecond] = useState(props.lastName)
-  const [skills, setSkill] = useState(props.skill)
-  const id = props.id
   const dispatch = useDispatch()
   
   useEffect(() => {
@@ -34,34 +32,30 @@ export default function EditContactModal(props) {
   return ( 
     <ThemedView style={styles.cont}>
         <View style={styles.bcont}>
-        <Pressable onPress={()=> {dispatch(deleteContact({first:first, last:second, skill:skills, id:id}))
-          props.setVis(false)}}>
+        <Pressable onPress={()=> {
+          props.setVis(false)}
+          }>
           <View style={{padding:8, backgroundColor:'#d22', borderRadius: 12}}>
             <ThemedText style={{color:'white', fontSize:22}}>DELETE</ThemedText>
           </View>
         </Pressable>
         
-        <Pressable onPress={()=> {
-          dispatch(updateContact({first:first, last:second, skill:skills, id:id}))
+        {/* <Pressable onPress={()=> {
+          dispatch(updateContact({}))
           props.setVis(false) 
         }}>
           <View style={{padding:8, backgroundColor:'green', borderRadius: 12}}>
             <ThemedText style={{color:'white', fontSize:22}}>Save</ThemedText>
           </View>
-        </Pressable>
+        </Pressable> */}
 
         </View>
     <ThemedView>
-    <ThemedText style={styles.desc}>First Name</ThemedText>
-    <ThemedTextInput darkColor={'#998'} style={styles.input} value={first} onChangeText={setFirst}/>
-    </ThemedView>
-    <ThemedView>
-    <ThemedText style={styles.desc}>Last Name</ThemedText>
-    <ThemedTextInput darkColor={'#998'} style={styles.input} value={second} onChangeText={setSecond}/>
-    </ThemedView>
-    <ThemedView>
-    <ThemedText style={styles.desc}>Skill Level</ThemedText>
-    <ThemedTextInput darkColor={'#998'} inputMode='numeric' style={styles.input} value={skills} onChangeText={setSkill}/>
+      <ThemedText>You have xx players</ThemedText>
+         <ThemedText>How many teams do you want?</ThemedText>
+         <ThemedTextInput darkColor={'#998'} style={styles.input} value={amountTeams} onChangeText={setAmountTeams}></ThemedTextInput>
+      <ThemedText>How players do you want on a team</ThemedText>
+      <ThemedTextInput darkColor={'#998'} style={styles.input} value={amountPlayers} onChangeText={setAmountPlayers}></ThemedTextInput>
     </ThemedView>
    </ThemedView>
   );
