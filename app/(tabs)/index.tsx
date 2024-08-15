@@ -19,7 +19,7 @@ export default function HomeScreen() {
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
         <Image
-          source={require('@/assets/images/vb1.jpg')}
+          source={require('@/assets/images/vball2.png')}
           style={styles.reactLogo}
         />
       }>
@@ -61,11 +61,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   reactLogo: {
-    // height: 1350,
-    // width:900,
-    // top: 0,
-    // right: 0,
-    // position: 'absolute',
-    // resizeMode:'repeat'
+    height: 500,
+    width:500,
+    top: -50,
+    right: 0,
+    position: 'absolute',
+    resizeMode:'repeat'
   },
 });
