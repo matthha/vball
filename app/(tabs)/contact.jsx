@@ -93,7 +93,7 @@ export default function Contact() {
       </View>
       </Pressable> */}
     <View style={{flex:1, flexDirection:'row'}}>
-    <ThemedTextInput darkColor={'#998'} style={styles.input} value={search} onChangeText={setSearch}/>
+    <ThemedTextInput darkColor={'#000'} style={styles.input} value={search} onChangeText={setSearch}/>
 
     <Pressable style={({ pressed }) => [
     { opacity: pressed ? 0.5 : 1.0 }
@@ -137,7 +137,7 @@ export default function Contact() {
               setModalVisible(!modalVisible)
             )
             }>
-            <ThemedView style={{marginVertical:2, padding:5,borderRadius:8}} darkColor='#242' lightColor='#1c1'>
+            <ThemedView style={{marginVertical:2, padding:5,borderRadius:8}} darkColor='#242' lightColor='#8be58b'>
             <ThemedText style={{textDecoration:'none'}}>{item.first} {item.last}, {item.skill}</ThemedText>
             </ThemedView>
             </Pressable>
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
    justifyContent: 'center',
    alignItems: 'center',
    marginTop: 12,
-   backgroundColor:'rgba(76, 175, 80, 0.3)',
+   backgroundColor:'rgba(76, 154, 175, 0.3)',
  },
  textStyle: {
   color:'white',
@@ -209,6 +209,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   input: {
+    backgroundColor: '#cef',
     height: 40,
     marginHorizontal: 12,
     borderWidth: .5,

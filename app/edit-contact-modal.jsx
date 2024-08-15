@@ -42,8 +42,9 @@ export default function EditContactModal(props) {
         </Pressable>
         
         <Pressable onPress={()=> {
+          if (Number(skills)!== NaN && Number(skills) > 0 && Number(skills) < 6) {
           dispatch(updateContact({first:first, last:second, skill:skills, id:id}))
-          props.setVis(false) 
+          props.setVis(false) }
         }}>
           <View style={{padding:8, backgroundColor:'green', borderRadius: 12}}>
             <ThemedText style={{color:'white', fontSize:22}}>Save</ThemedText>

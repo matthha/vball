@@ -21,11 +21,13 @@ export function ThemedText({
     <Text
       style={[
         { color },
+        {fontFamily:'system-ui'},
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
         type === 'subtitle' ? styles.subtitle : undefined,
         type === 'link' ? styles.link : undefined,
+        type === 'subdued' ? styles.subdued : undefined,
         style,
       ]}
       {...rest}
@@ -57,4 +59,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0a7ea4',
   },
+  subdued:{
+    fontSize:10,
+    lineHeight:20
+  }
 });

@@ -1,19 +1,29 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform, FlatList, Button, Pressable, View, Modal } from 'react-native';
+import { StyleSheet, Image, Platform, FlatList, Button, Pressable, View, Modal, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
+import { ThemedText as TT} from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { ThemedTextInput } from '@/components/ThemedInput';
+import { ThemedTextInput as TTInput } from '@/components/ThemedInput';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
+import { addPlayer, decreaseTeams, increaseTeams, removePlayer, resetTeams } from './data/Action';
+
 export default function TeamsMade(props) {
+
    const teams = useSelector((state)=>state.teams)
    const contacts = useSelector((state)=>state.myContacts)
    const dispatch = useDispatch()
-   const [modalVisible, setModalVisible] = useState(false);
+   const [teamModalVisible, setTeamModalVisible] = useState(false);
+   const [moveVisible, setMoveVisible] = useState(false);
+   const [teamSizeVisible, setTeamSizeVisible] = useState(false);
+   const [resetVisible, setResetVisible] = useState(false);
+   const [theTeam, setTheTeam] = useState(0);
+   const [thePlayer, setThePlayer] = useState(0);
+
+
    const arrangedTeams = teams.map((x,y)=>{
       z = x.map((idNum)=> {
          const b = contacts.filter(e=> e.id===idNum )
@@ -21,78 +31,279 @@ export default function TeamsMade(props) {
       })
       return z
    })
-  // Overlay for making teams
-  const Overlay = (props) => {
-   return(
-     <Modal
-     animationType="fade"
-     transparent={true}
-     visible={modalVisible}
-     onRequestClose={() => {
-       setModalVisible(!modalVisible);
-     }}>
-     <ThemedView style={styles.centeredView2}>
-       <ThemedView style={styles.modalView}>
-         {props.children}
-         <Pressable
-           style={[styles.button]}
-           onPress={() => setModalVisible(!modalVisible)}>
-           <ThemedText style={styles.textStyle}>Close</ThemedText>
-         </Pressable>
-       </ThemedView>
-     </ThemedView>
-   </Modal>
-   )
- } 
+   // console.log('teams are', arrangedTeams)
+   // Overlay for making teams
+
+
+
+   const CalculateAverage = (team) => {
+      let score = 0
+      team.forEach((x)=>{
+         score += Number(x.skill)
+      })
+      score/=team.length
+      let scoreShort = JSON.stringify(score).slice(0,4)
+      return scoreShort
+   }
+   const CheckValidTeam = (x) => {
+      if (Number(x)>= 0 && Number(x) <= arrangedTeams.length-1) {
+         return true
+      } else {
+         return false
+      }
+   }
+
+   const OverlayTeamSize = () => {
+      return(
+            <Modal
+            animationType="none"
+            transparent={true}
+            visible={teamSizeVisible}
+            onRequestClose={() => {
+               setTeamModalVisible(!teamSizeVisible);
+            }}>
+            
+            <ThemedView style={styles.centeredView2}>
+               <ThemedView style={styles.modalView}>
+                  <TT type='defaultSemiBold'>You have {props.playerCount} players total.</TT>
+                  <TT>4/team ≈ {Math.floor(props.playerCount/4)} teams
+                     <TT type='subdued'>   {props.playerCount%4} extra</TT>
+                  </TT>
+                  <TT>6/team ≈ {Math.floor(props.playerCount/6)} teams<TT type='subdued'>   {props.playerCount%6} extra</TT></TT>
+                  <TT>8/team ≈ {Math.floor(props.playerCount/8)} teams<TT type='subdued'>   {props.playerCount%8} extra</TT></TT>
+                  <TT>How many teams do you want?</TT>
+
+                  {/* Buttons to Change Team Size */}
+
+                  <ThemedView style={{flexDirection:'row', alignItems:'center' }}>
+                  <Pressable
+                  style={[styles.button1]}
+                  onPress={() => {teams.length > 1 ? dispatch(decreaseTeams()):[]}}>
+                  <TT style={styles.textStyle}><Ionicons name='arrow-down' size={24}/></TT>
+                  </Pressable>
+
+                  <TT>{teams.length-1} teams</TT>
+
+                  <Pressable
+                  style={[styles.button1]}
+                  onPress={() => dispatch(increaseTeams())}>
+                  <TT style={styles.textStyle}><Ionicons name='arrow-up' size={24}/></TT>
+                  </Pressable>
+                  </ThemedView>
+                  <TT type='subdued'>Makes {Math.floor(props.playerCount/(teams.length-1))} per team + ({props.playerCount%(teams.length-1)} extra)</TT>
+                  {/* Close Button */}
+                  <Pressable
+                  style={[styles.button]}
+                  onPress={() => setTeamSizeVisible(!teamSizeVisible)}>
+                  <TT style={styles.textStyle}>Close</TT>
+                  </Pressable>
+               </ThemedView>
+            </ThemedView>
+            </Modal>
+      )
+   }
+   const OverlayResetTeams = () => {
+      return(
+            <Modal
+            animationType="none"
+            transparent={true}
+            visible={resetVisible}
+            onRequestClose={() => {
+               setResetVisible(!resetVisible);
+            }}>
+            
+            <ThemedView style={styles.centeredView2}>
+               <ThemedView style={styles.modalView}>
+                  <TT>Do you want to unassign all players and start with 0 teams?<TT type='subdued'> To clear players go back to Players screen </TT></TT>
+                  <Pressable style={({ pressed }) => [
+                     { opacity: pressed ? 0.5 : 1.0 }
+                     ]} onPress={()=> {dispatch(resetTeams()); setResetVisible(!resetVisible)}}>
+                     <ThemedView style={{padding:8, backgroundColor:'red', borderRadius: 12}}>
+                        <TT style={{color:'white', fontSize:22}}>Reset Teams</TT>
+                     </ThemedView>
+                  </Pressable>  
+                  {/* Close Button */}
+                  <Pressable
+                  style={[styles.button]}
+                  onPress={() => setResetVisible(!resetVisible)}>
+                  <TT style={styles.textStyle}>Close</TT>
+                  </Pressable>
+               </ThemedView>
+            </ThemedView>
+            </Modal>
+      )
+   }
+   const OverlayTeam = (props) => {
+      
+      return(
+      <Modal
+      animationType="none"
+      transparent={true}
+      visible={teamModalVisible}
+      onRequestClose={() => {
+         setTeamModalVisible(!teamModalVisible);
+      }}>
+      
+      <ThemedView style={styles.centeredView2}>
+         
+         <ThemedView style={styles.modalView}>
+            <TT>Team {theTeam}</TT>
+            {/* <ThemedView style={{flex:1}}> */}
+            <ScrollView >
+            <FlatList
+            data={arrangedTeams[theTeam]}
+            renderItem={({item,index})=>{
+               return (
+                  <ThemedView style={[styles.teamBox,{borderColor:'orange'}]}>
+                  <Pressable onPress={() => {setThePlayer(index); setMoveVisible(!moveVisible); setTeamModalVisible(!teamModalVisible)}}>
+                     <TT>{item?.first} {item?.last} ({item?.skill})</TT>
+                  </Pressable>
+                  {/* <TTInput></TTInput> */}
+                  </ThemedView>
+               )
+            }}
+            />
+                  </ScrollView>
+            {/* </ThemedView> */}
+            <Pressable
+            style={[styles.button]}
+            onPress={() => setTeamModalVisible(!teamModalVisible)}>
+            <TT style={styles.textStyle}>Close</TT>
+            </Pressable>
+         </ThemedView>
+      </ThemedView>
+
+      </Modal>
+      )
+   } 
+   const OverlayMove = (props) => {
+      const [toTeam, setToTeam] = useState('0');
+
+      return(
+      <Modal
+      animationType='none'
+      transparent={true}
+      visible={moveVisible}
+      onRequestClose={() => {
+         setMoveVisible(!moveVisible);
+      }}>
+      <ThemedView style={styles.centeredView2}>
+         <ThemedView style={styles.modalView}>
+            <TT>Select a team </TT><TT>to move {arrangedTeams[theTeam][thePlayer]?.first} {arrangedTeams[theTeam][thePlayer]?.last}.</TT>
+            {/* <TTInput inputMode='numeric' darkColor={'#998'} style={styles.input} value={toTeam} onChangeText={setToTeam}/>
+            {CheckValidTeam(toTeam)? <TT> </TT>:<TT style={{color:'red'}}>Enter a value between 0 and {arrangedTeams.length-1}</TT> }
+            <Pressable
+            style={[styles.button, {backgroundColor:'green'}]}
+            onPress={() => {
+               if (CheckValidTeam(toTeam)){dispatch(removePlayer(arrangedTeams[theTeam][thePlayer]?.id)); dispatch(addPlayer(arrangedTeams[theTeam][thePlayer]?.id,toTeam));setThePlayer(0); setMoveVisible(!moveVisible)}}}>
+            <TT style={styles.textStyle}>Save</TT>
+            </Pressable> */}
+            <ThemedView style={{flexDirection:'row',}}>
+            {teams.map((x,index) => {
+               return(
+               <ThemedView><Pressable
+               style={[styles.button1, {backgroundColor:'lightblue'}]}
+               onPress={() => {
+                  dispatch(removePlayer(arrangedTeams[theTeam][thePlayer]?.id)); dispatch(addPlayer(arrangedTeams[theTeam][thePlayer]?.id,index));setThePlayer(0); setMoveVisible(!moveVisible)}}>
+                     <TT style={{color:'black'}}>{index}</TT></Pressable></ThemedView>)
+            })}
+            </ThemedView>
+
+            <Pressable
+            style={[styles.button]}
+            onPress={() => {setThePlayer(0); setMoveVisible(!moveVisible)}}>
+            <TT style={styles.textStyle}>Close</TT>
+            </Pressable>
+         </ThemedView>
+      </ThemedView>
+      </Modal>
+      )
+   } 
+
    return (
       <ThemedView style={{flex:1, flexDirection:'column'}}>
+         {/* Overlays */}
+        <OverlayTeam></OverlayTeam>
+        <OverlayMove></OverlayMove>
+        <OverlayTeamSize></OverlayTeamSize>
+        <OverlayResetTeams></OverlayResetTeams>
+
          <ThemedView style={styles.titleContainer} >
       {/*  Header  */}
       <ThemedView style={{padding:12, flexDirection:'row',justifyContent:'space-between'}} darkColor='#333' lightColor={'#5bb'}>
-         <ThemedText type="title">Players</ThemedText>
+         <TT type="title">Teams</TT>
          {/* Switch Button */}
          <Pressable style={({ pressed }) => [
             { opacity: pressed ? 0.5 : 1.0 }
             ]} onPress={()=> props.setSwitched(!props.switched)}>
             <ThemedView style={{padding:8, backgroundColor:'#11c', borderRadius: 12}}>
-               <ThemedText style={{color:'white', fontSize:22}}>Go to Players</ThemedText>
+               <TT style={{color:'white', fontSize:22}}>Go to Players</TT>
             </ThemedView>
-         </Pressable>
-        {/* <Overlay>
-          <TeamsModal setVis={setModalVisible}/>
-        </Overlay> */}
+         </Pressable>      
+      </ThemedView>
+      {/*  Buttons Container  */}
+      <ThemedView style={styles.cont}>
+      {/* Reset Teams? */}
+      <Pressable style={({ pressed }) => [
+      { opacity: pressed ? 0.5 : 1.0 }
+         ]} onPress={()=> setResetVisible(!resetVisible)}>
+        <ThemedView style={{padding:8, backgroundColor:'#950000', borderRadius: 12}}>
+          <TT style={{color:'white', fontSize:19}}>RESET Teams?</TT>
+        </ThemedView>
+      </Pressable>
+      {/* Shuffle Button */}
+      <Pressable style={({ pressed }) => [
+      { opacity: pressed ? 0.5 : 1.0 }
+         ]} onPress={()=> []}>
+        <ThemedView style={{padding:8, backgroundColor:'#ffca7d', borderRadius: 12}}>
+          <TT style={{color:'black', fontSize:19}}>Shuffle</TT>
+        </ThemedView>
+      </Pressable>
+      {/* Team Sizing */}
+      <Pressable style={({ pressed }) => [
+      { opacity: pressed ? 0.5 : 1.0 }
+         ]} onPress={()=> setTeamSizeVisible(!teamSizeVisible)}>
+        <ThemedView style={{padding:8, backgroundColor: '#ff91d9', borderRadius: 12}}>
+          <TT style={{color:'black', fontSize:19}}>Resize Teams</TT>
+        </ThemedView>
+      </Pressable>
+      </ThemedView>
+         {/* Teams */}
+      <FlatList
+         data={arrangedTeams}
+         renderItem={({item,index})=>{
+         if (item.length > 0) {
+            let thisTeam = item.map((x)=>{
+               return (`჻ ${x.first +  ' ' + x.last + ' (' + x.skill + '), '}`)
+            })
 
+         return(
+         <ThemedView style={{padding:5}}>
+            <Pressable onPress={()=>{
+               setTheTeam(index)
+               setTeamModalVisible(!teamModalVisible); 
+               
+            }}>
+            <TT style={styles.teamBox}>
+            <ThemedView>
+               <TT><TT type="defaultSemiBold" >{(index===0?'Unassigned':'Team ' + index)}</TT>
+               <TT> (<TT type='subdued'>score </TT>{CalculateAverage(item)}), 
+               <TT style={{fontFamily:'Gotham'}}> {item.length} players</TT>:</TT></TT>
+               <TT>{thisTeam}</TT></ThemedView>
+            </TT>
+            </Pressable>
+         </ThemedView>
+            )} else {
+               return(
+                  <ThemedView>
+                  <TT style={{backgroundColor:'gray', margin:5,padding:2}}>
+                  {(index===0?'Unassigned':'Team ' + index)} : No one yet</TT>
+               </ThemedView>
+               )
+            }}}
+      />
 
       </ThemedView>
-         <ThemedText>In the Teams Component</ThemedText>
-{/* I think the rednerItem below is what's causing the text node Issue. I could make a new function that checks the score first and have it render to see if it fixes the issue. */}
-         <FlatList
-            data={arrangedTeams}
-            renderItem={({item,index})=>{
-            if (item.length > 0) { 
-               let score = 0
-               item.forEach((x)=>{
-                  score += Number(x.skill)
-               })
-               let thisTeam = item.map((x)=>{
-                  return (`${x.first +  ' ' + x.last + ' (' + x.skill + '), '}`)
-               })
-               score/=item.length
-            let scoreShort = JSON.stringify(score).slice(0,4)
-            return(
-            <ThemedView>
-               <ThemedText style={styles.teamBox} >Team {index +1} avg-{scoreShort} : {thisTeam}</ThemedText>
-            </ThemedView>
-               )} else {
-                  return(
-                     <ThemedView>
-                     <ThemedText style={{backgroundColor:'gray', margin:5}}>Team {index +1} : No one yet</ThemedText>
-                  </ThemedView>
-                  )
-               }}}
-         />
-
-         </ThemedView>
 
       </ThemedView>
       
@@ -100,76 +311,90 @@ export default function TeamsMade(props) {
 }
 const styles = StyleSheet.create({
    titleContainer: {
-     flex: 1,
-     paddingTop: 32,
-     gap: 16,
-     overflow: 'hidden',
+   flex: 1,
+   paddingTop: 32,
+   gap: 16,
+   overflow: 'hidden',
    },
    cont: {
-     display:'flex',
-     flexDirection:'row',
-     gap: 10,
-     justifyContent:'flex-end',
-     marginHorizontal: 15,
+   display:'flex',
+   flexDirection:'row',
+   gap: 10,
+   justifyContent:'flex-end',
+   marginHorizontal: 15,
    },
    button: {
-     backgroundColor:'#333',
-     width: "auto",
-     margin: '.5em',
-     padding: '.5em',
-     border: '5px solid #000',
-     borderRadius: '1.5em'
+   backgroundColor:'#333',
+   width: "auto",
+   margin: '.5em',
+   padding: '.5em',
+   border: '5px solid #000',
+   borderRadius: '1.5em'
+   },
+   button1: {
+   backgroundColor:'#3333ee',
+   width: "auto",
+   margin: '.5em',
+   padding: '.5em',
+   // border: '5px solid #000',
+   borderRadius: '1.5em'
    },
    centeredView: {
-     flex: 1,
-     justifyContent: 'center',
-     alignItems: 'center',
-     marginTop: 22,
-     // backgroundColor:'#499'
+   flex: 1,
+   justifyContent: 'center',
+   alignItems: 'center',
+   marginTop: 22,
+   // backgroundColor:'#499'
    },
    centeredView2: {
-    flex: 1,
-    gap:18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 12,
-    backgroundColor:'rgba(76, 175, 80, 0.3)',
-  },
-  textStyle: {
-   color:'white',
-  },
-  teamBox: {
-   // backgroundColor:'#1945a3', 
-   margin:5, 
-   padding:4, 
-   borderRadius:5, 
-   border: '5px solid blue'
-   // borderColor:'blue', 
-   // borderWidth:5
-  },
+   flex: 1,
+   gap:18,
+   // alignContent: 'flex-end',
+   justifyContent: 'center',
+   alignItems: 'center',
+   marginTop: 12,
+   backgroundColor:'rgba(76, 154, 175, 0.3)',
+   },
+   textStyle: {
+      color:'white',
+   },
+   teamBox: {
+      // backgroundColor:'#1945a3', 
+      margin:5, 
+      padding:4, 
+      borderRadius:5, 
+      border: '5px solid #059'
+      // borderColor:'blue', 
+      // borderWidth:5
+   },
    modalView: {
-     margin: 10,
-     opacity:10,
-     gap:12,
-     // backgroundColor: 'white',
-     borderRadius: 20,
-     padding: 15,
-     alignItems: 'center',
-     shadowColor: '#999',
-     shadowOffset: {
-       width: 0,
-       height: 2,
-     },
-     shadowOpacity: 0.25,
-     shadowRadius: 4,
-     elevation: 5,
+      // flex:.8,
+      // flexWrap:'nowrap',
+      // flexDirection:'column',
+      // justifyContent:'flex-start',
+      margin: 10,
+      opacity:10,
+      gap:12,
+      // backgroundColor: 'white',
+      borderRadius: 20,
+      padding: 15,
+      justifyContent:'center',
+      alignItems: 'center',
+      shadowColor: '#999',
+      shadowOffset: {
+         width: 0,
+         height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
    },
    input: {
-     height: 40,
-     marginHorizontal: 12,
-     borderWidth: .5,
-     borderRadius:1,
-     padding: 10,
+      height: 50,
+      // marginHorizontal: 12,
+      borderWidth: .5,
+      borderRadius:1,
+      padding: 10,
    },
-   
+
  });

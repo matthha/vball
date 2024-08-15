@@ -9,7 +9,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { ThemedTextInput } from '@/components/ThemedInput';
-import { deleteContact, updateContact } from './data/Action.js'
+import { clearPlayers, deleteContact, updateContact } from './data/Action.js'
 // import { FlatList } from 'react-native-gesture-handler';
 
 
@@ -32,13 +32,7 @@ export default function TeamsModal(props) {
   return ( 
     <ThemedView style={styles.cont}>
         <View style={styles.bcont}>
-        <Pressable onPress={()=> {
-          props.setVis(false)}
-          }>
-          <View style={{padding:8, backgroundColor:'#d22', borderRadius: 12}}>
-            <ThemedText style={{color:'white', fontSize:22}}>DELETE</ThemedText>
-          </View>
-        </Pressable>
+        
         
         {/* <Pressable onPress={()=> {
           dispatch(updateContact({}))
@@ -51,11 +45,22 @@ export default function TeamsModal(props) {
 
         </View>
     <ThemedView>
-      <ThemedText>You have xx players</ThemedText>
+    <Pressable onPress={()=> {
+      dispatch(clearPlayers())
+      props.setVis(false)}
+      }>
+      <View style={{padding:8, backgroundColor:'#d22', borderRadius: 12}}>
+        <ThemedText style={{color:'white', fontSize:22, textAlign:'center'}}>
+          CLEAR ALL
+        </ThemedText>
+      </View>
+    </Pressable>
+      <ThemedText>Are you sure you want to clear all players?</ThemedText>
+      {/* <ThemedText>You have xx players</ThemedText>
          <ThemedText>How many teams do you want?</ThemedText>
          <ThemedTextInput darkColor={'#998'} style={styles.input} value={amountTeams} onChangeText={setAmountTeams}></ThemedTextInput>
       <ThemedText>How players do you want on a team</ThemedText>
-      <ThemedTextInput darkColor={'#998'} style={styles.input} value={amountPlayers} onChangeText={setAmountPlayers}></ThemedTextInput>
+      <ThemedTextInput darkColor={'#998'} style={styles.input} value={amountPlayers} onChangeText={setAmountPlayers}></ThemedTextInput> */}
     </ThemedView>
    </ThemedView>
   );

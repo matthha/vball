@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ADD_CONTACT, ADD_PLAYER, DELETE_CONTACT, LOAD_CONTACTS, LOAD_DATA, REMOVE_PLAYER, UPDATE_CONTACT } from "../../Reducer";
+import { ADD_CONTACT, ADD_PLAYER, CLEAR_PLAYERS, DECREASE_TEAMS, DELETE_CONTACT, INCREASE_TEAMS, LOAD_CONTACTS, LOAD_DATA, REMOVE_PLAYER, RESET_TEAMS, UPDATE_CONTACT } from "../../Reducer";
 
 // ** Action.js is where we do the Async stuff.
 // ** Then we use the data to dispatch what we
@@ -142,5 +142,33 @@ const removePlayer = (id) => {
     })
   }
 }
+const clearPlayers = () => {
+  return (dispatch) => {
+    dispatch({
+      type: CLEAR_PLAYERS
+    })
+  }
+}
 
-export { updateContact, gettingData, addContact, deleteContact, addPlayer, removePlayer }
+const increaseTeams = () => {
+  return (dispatch) => {
+    dispatch({
+      type: INCREASE_TEAMS
+    })
+  }
+}
+const decreaseTeams = () => {
+  return (dispatch) => {
+    dispatch({
+      type: DECREASE_TEAMS
+    })
+  }
+}
+const resetTeams = () => {
+  return (dispatch) => {
+    dispatch({
+      type: RESET_TEAMS
+    })
+  }
+}
+export { updateContact, gettingData, addContact, deleteContact, addPlayer, removePlayer, clearPlayers, increaseTeams, decreaseTeams, resetTeams }

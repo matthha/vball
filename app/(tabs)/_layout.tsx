@@ -20,7 +20,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].bar,
         headerShown: false,
       }}>
       <Tabs.Screen
@@ -54,6 +54,8 @@ export default function TabLayout() {
         name="tourny"
         options={{
           title: 'Brackets',
+          // null being used to hide the tab for now
+          href: null,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'git-network' : 'git-network-outline'} color={color} />
           ),

@@ -20,7 +20,7 @@ export default function AddContact(props) {
   const [cons, setCons] = useState([{}])
   const [first, setFirst] = useState('')
   const [second, setSecond] = useState('')
-  const [skills, setSkill] = useState('')
+  const [skills, setSkill] = useState('1')
   const dispatch = useDispatch()
   
   useEffect(() => {
@@ -48,9 +48,9 @@ export default function AddContact(props) {
       </View>
     </Pressable>
     <Pressable onPress={()=> {
+      if (Number(skills)!== NaN && Number(skills) > 0 && Number(skills) < 6) {
       dispatch(addContact({first:first, last:second, skill:skills}))
-      
-      router.back()
+      router.back()}
     }}>
       <View style={{padding:8, backgroundColor:'green', borderRadius: 12}}>
         <ThemedText style={{color:'white', fontSize:22}}>Save</ThemedText>

@@ -6,6 +6,11 @@ const ADD_CONTACT = 'ADD_CONTACT';
 const DELETE_CONTACT = 'DELETE_CONTACT';
 const ADD_PLAYER = 'ADD_PLAYER';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
+const CLEAR_PLAYERS = 'CLEAR_PLAYERS';
+const INCREASE_TEAMS = 'INCREASE_TEAMS';
+const DECREASE_TEAMS = 'DECREASE_TEAMS';
+const RESET_TEAMS = 'RESET_TEAMS';
+const SHUFFLE_TEAMS = 'SHUFFLE_TEAMS';
 
  const updateContact = (state, contact) => {
   let {myContacts} = state;
@@ -43,6 +48,55 @@ const REMOVE_PLAYER = 'REMOVE_PLAYER';
     teams: editedTeams
   }
  }
+
+ const clearPlayers = (state) => {
+  let {teams} = state;
+  let newTeams = teams.map(elem=> [])
+  AsyncStorage.setItem('teams', JSON.stringify(newTeams))
+  return {
+    ...state,
+    teams: newTeams
+  }
+ }
+
+ const increaseTeams = (state) => {
+  let {teams} = state;
+  let newTeams = [...teams];
+  newTeams.push([]);
+  AsyncStorage.setItem('teams',JSON.stringify(newTeams))
+  return {
+    ...state, 
+    teams: newTeams
+  }
+ }
+
+ const decreaseTeams = (state) => {
+  let {teams} = state;
+  let newTeams = [...teams];
+  let removed = newTeams.pop();
+  newTeams[0] = newTeams[0].concat(removed);
+  AsyncStorage.setItem('teams',JSON.stringify(newTeams));
+  return {
+    ...state, 
+    teams: newTeams
+  }
+ }
+
+ const resetTeams = (state) => {
+  let {teams} = state;
+  let newTeams = teams.flat();
+  AsyncStorage.setItem('teams',JSON.stringify([newTeams]))
+  return{
+    ...state,
+    teams: [newTeams]
+  }
+
+ }
+
+ const shuffleTeams = (state) => {
+
+ }
+
  const deleteContact = (state, contact) => {
   let {myContacts} = state;
   let newContacts = myContacts.filter(elem=>elem.id!==contact.id);
@@ -59,7 +113,6 @@ const REMOVE_PLAYER = 'REMOVE_PLAYER';
   const conID = {...newcontact, id: nextKey.toString()}
   let newContacts = [...myContacts];
   newContacts.push(conID)
-  console.log('newcontacts is',newContacts)
   AsyncStorage.setItem('contacts', JSON.stringify(newContacts));
   let newNextKey = nextKey + 1
   return {
@@ -110,7 +163,15 @@ const loadData = (state, data) => {
       case ADD_PLAYER:
         return addPlayer(state, action.payload.theId, action.payload.theTeam);
       case REMOVE_PLAYER:
-        return removePlayer(state, action.payload.theId)
+        return removePlayer(state, action.payload.theId);
+      case CLEAR_PLAYERS:
+        return clearPlayers(state);
+      case INCREASE_TEAMS:
+        return increaseTeams(state);
+      case DECREASE_TEAMS:
+        return decreaseTeams(state);
+      case RESET_TEAMS:
+        return resetTeams(state);
       case LOAD_DATA:
         return loadData(state, action.payload.data);
       default: 
@@ -118,4 +179,4 @@ const loadData = (state, data) => {
    }
  }
 
- export { rootReducer, LOAD_DATA, UPDATE_CONTACT, ADD_CONTACT, DELETE_CONTACT, ADD_PLAYER, REMOVE_PLAYER}
+ export { rootReducer, LOAD_DATA, UPDATE_CONTACT, ADD_CONTACT, DELETE_CONTACT, ADD_PLAYER, REMOVE_PLAYER, CLEAR_PLAYERS, INCREASE_TEAMS, DECREASE_TEAMS, RESET_TEAMS}

@@ -26,7 +26,7 @@ export default function TabTwoScreen() {
   const Overlay = (props: any) => {
     return(
       <Modal
-      animationType="fade"
+      animationType="none"
       transparent={true}
       visible={modalVisible}
       onRequestClose={() => {
@@ -88,7 +88,7 @@ export default function TabTwoScreen() {
       <ThemedView style={styles.titleContainer}>
         {/*  Header  */}
       <ThemedView style={{padding:12, flexDirection:'row',justifyContent:'space-between'}} darkColor='#333' lightColor={'#5bb'}>
-        <ThemedText type="title">Players</ThemedText>
+        <ThemedText type="title">Player Selection</ThemedText>
         {/* Switch Button */}
         <Pressable style={({ pressed }) => [
       { opacity: pressed ? 0.5 : 1.0 }
@@ -100,14 +100,12 @@ export default function TabTwoScreen() {
         <Overlay>
           <TeamsModal setVis={setModalVisible}/>
         </Overlay>
-
-
       </ThemedView>
         {/*  Buttons Container  */}
       <View style={styles.cont}>
       {/* Search Bar */}
-      <View style={{flex:1, flexDirection:'row'}}>
-      <ThemedTextInput darkColor={'#998'} style={styles.input} value={search} onChangeText={setSearch}/>
+      <View style={{flex:1, flexDirection:'row',flexWrap:'wrap',}}>
+      <ThemedTextInput darkColor={'#000'} style={styles.input} value={search} onChangeText={setSearch}/>
       {/* Clear Button */}
       <Pressable style={({ pressed }) => [
       { opacity: pressed ? 0.5 : 1.0 }
@@ -116,18 +114,17 @@ export default function TabTwoScreen() {
           <ThemedText style={{color:'black', fontSize:22}}>X</ThemedText>
         </View>
       </Pressable>
-      </View>
-
-
+      
     
-      {/* Teams Button */}
+      {/* Clear Button */}
       <Pressable style={({ pressed }) => [
       { opacity: pressed ? 0.5 : 1.0 }
     ]} onPress={()=> setModalVisible(!modalVisible)}>
-        <ThemedView style={{padding:8, backgroundColor:'green', borderRadius: 12}}>
-          <ThemedText style={{color:'white', fontSize:22}}>Teams</ThemedText>
+        <ThemedView style={{padding:8, backgroundColor:'#950000', borderRadius: 12,alignItems:'center'}}>
+          <ThemedText style={{color:'white', fontSize:19}}>CLEAR</ThemedText><ThemedText style={{color:'white', fontSize:19}}>Players?</ThemedText>
         </ThemedView>
       </Pressable>
+      </View>
       </View>  
       {/* --- End of Buttons --- */}
     
@@ -160,7 +157,7 @@ export default function TabTwoScreen() {
       </ThemedView>
   )} else {
     return (
-      <TeamsMade switched={switched} setSwitched={setSwitched}/>
+      <TeamsMade switched={switched} setSwitched={setSwitched} playerCount={unassigned.length}/>
     )
   }
 }
@@ -173,10 +170,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cont: {
-    display:'flex',
+    // flex:1,
     flexDirection:'row',
     gap: 10,
-    justifyContent:'flex-end',
+    // justifyContent:'flex-end',
     marginHorizontal: 15,
   },
   button: {
@@ -200,7 +197,7 @@ const styles = StyleSheet.create({
    justifyContent: 'center',
    alignItems: 'center',
    marginTop: 12,
-   backgroundColor:'rgba(76, 175, 80, 0.3)',
+   backgroundColor:'rgba(76, 154, 175, 0.3)',
  },
  textStyle: {
   color:'white',
@@ -223,6 +220,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   input: {
+    backgroundColor:'#cef',
     height: 40,
     marginHorizontal: 12,
     borderWidth: .5,
