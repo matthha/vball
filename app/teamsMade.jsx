@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText as TT} from '@/components/ThemedText';
+import { ThemedText, ThemedText as TT} from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedTextInput as TTInput } from '@/components/ThemedInput';
 import { useDispatch, useSelector } from 'react-redux';
@@ -147,12 +147,26 @@ export default function TeamsMade(props) {
       <ThemedView style={styles.centeredView2}>
          
          <ThemedView style={styles.modalView}>
+            <ThemedView style={{flexDirection:'row', alignItems:'center'}}>
+            <Pressable
+               style={[styles.button1]}
+               onPress={() => {theTeam === 0 ? setTheTeam(teams.length-1):setTheTeam(theTeam-1)}}>
+               <TT style={styles.textStyle}><Ionicons name='arrow-back' size={24}/></TT>
+            </Pressable>
             <TT>Team {theTeam}</TT>
+            <Pressable
+               style={[styles.button1]}
+               onPress={() => {theTeam === teams.length-1 ? setTheTeam(0):setTheTeam(theTeam+1)}}>
+               <TT style={styles.textStyle}><Ionicons name='arrow-forward' size={24}/></TT>
+            </Pressable>
+            </ThemedView>
             {/* <ThemedView style={{flex:1}}> */}
             <ScrollView >
             <FlatList
             data={arrangedTeams[theTeam]}
+            ListEmptyComponent={<ThemedView><ThemedText>No one here.</ThemedText></ThemedView>}
             renderItem={({item,index})=>{
+
                return (
                   <ThemedView style={[styles.teamBox,{borderColor:'orange'}]}>
                   <Pressable onPress={() => {setThePlayer(index); setMoveVisible(!moveVisible); setTeamModalVisible(!teamModalVisible)}}>
