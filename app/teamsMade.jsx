@@ -9,7 +9,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedTextInput as TTInput } from '@/components/ThemedInput';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { addPlayer, decreaseTeams, increaseTeams, removePlayer, resetTeams } from './data/Action';
+import { addPlayer, decreaseTeams, increaseTeams, removePlayer, resetTeams, shuffleTeams } from './data/Action';
 
 export default function TeamsMade(props) {
 
@@ -34,6 +34,91 @@ export default function TeamsMade(props) {
    // console.log('teams are', arrangedTeams)
    // Overlay for making teams
 
+   const shuffle = (q) => {
+      function shuffler(array) {
+         let currentIndex = array.length;
+       
+         // While there remain elements to shuffle...
+         while (currentIndex != 0) {
+       
+           // Pick a remaining element...
+           let randomIndex = Math.floor(Math.random() * currentIndex);
+           currentIndex--;
+       
+           // And swap it with the current element.
+           [array[currentIndex], array[randomIndex]] = [
+             array[randomIndex], array[currentIndex]];
+         }
+       }
+
+      // sort arrangedTeams
+      let tempTeams = arrangedTeams.flat()
+
+      // make skilled teams
+      let skillTeams = [[],[],[],[],[]]
+
+      // map through teams and push to skilled teams
+      tempTeams.map((player) => {
+         // first, last, skill, id
+         skillTeams[Number(player.skill)-1].push(player.id)
+      })
+
+      // teams.map(  (x,index) => {}   )
+
+      // randomize skilled teams
+      for (let p=0; p < skillTeams.length; p++) {
+         shuffler(skillTeams[p])
+      }
+
+      // slice through the top x (arrangedTeams.length-1) (how many teams we have 10teams= grab top 10)
+      
+      // initialize final home for our players in their teams
+      let finalTeams = []
+      arrangedTeams.map((x,i)=>{
+         if (i!==0) {
+            finalTeams.push([])
+         }
+      })
+      skillTeams=skillTeams.flat()
+
+      // Starting the slicing loop
+      for (let i=0; i < (Math.floor(props.playerCount/(arrangedTeams.length-1))); i++) 
+      {
+         // The above for makes them do however many loops of x players are needed.
+         // console.log('player Count is: ',props.playerCount, 'arranged team length is: ', arrangedTeams.length, 'skill Teams flattened length is', skillTeams.length, '; times through slice loop is: ', Math.floor(props.playerCount/(arrangedTeams.length-1)), '; finalTeams length is: ',finalTeams.length)
+
+         let tempPlayers = []
+         // switch between conditions everyother time
+         if (i%2 === 0) {
+      
+           let ii = (skillTeams.splice(0, (finalTeams.length)))
+
+            tempPlayers.push(ii)
+            // slice the bottom x and Repeat until no more players
+            for (let y=0; y < tempPlayers[0].length; y++) {
+               finalTeams[y].push(tempPlayers[0][y])
+            }
+         } else {
+            tempPlayers.push(skillTeams.splice(skillTeams.length-finalTeams.length, finalTeams.length))
+            let reversed = []
+            for (let y=tempPlayers[0].length-1; y >=0 ; y--) {
+               reversed.push(tempPlayers[0][y])
+            }
+            for (let y=0; y < tempPlayers[0].length; y++) {
+               finalTeams[y].push(reversed[y])
+            }
+            
+
+         }
+         // map through the splice and push to the teams
+
+
+
+
+      }
+      finalTeams.unshift([...skillTeams])
+      return(finalTeams)
+   }
 
 
    const CalculateAverage = (team) => {
@@ -215,7 +300,7 @@ export default function TeamsMade(props) {
             <ThemedView style={{flexDirection:'row',}}>
             {teams.map((x,index) => {
                return(
-               <ThemedView><Pressable
+               <ThemedView key={index}><Pressable
                style={[styles.button1, {backgroundColor:'lightblue'}]}
                onPress={() => {
                   dispatch(removePlayer(arrangedTeams[theTeam][thePlayer]?.id)); dispatch(addPlayer(arrangedTeams[theTeam][thePlayer]?.id,index));setThePlayer(0); setMoveVisible(!moveVisible)}}>
@@ -258,6 +343,8 @@ export default function TeamsMade(props) {
       {/*  Buttons Container  */}
       <ThemedView style={styles.cont}>
       {/* Reset Teams? */}
+
+
       <Pressable style={({ pressed }) => [
       { opacity: pressed ? 0.5 : 1.0 }
          ]} onPress={()=> setResetVisible(!resetVisible)}>
@@ -265,10 +352,12 @@ export default function TeamsMade(props) {
           <TT style={{color:'white', fontSize:19}}>RESET Teams?</TT>
         </ThemedView>
       </Pressable>
+
+
       {/* Shuffle Button */}
       <Pressable style={({ pressed }) => [
       { opacity: pressed ? 0.5 : 1.0 }
-         ]} onPress={()=> []}>
+         ]} onPress={()=> dispatch(shuffleTeams(shuffle()))}>
         <ThemedView style={{padding:8, backgroundColor:'#ffca7d', borderRadius: 12}}>
           <TT style={{color:'black', fontSize:19}}>Shuffle</TT>
         </ThemedView>

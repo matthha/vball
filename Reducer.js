@@ -90,11 +90,16 @@ const SHUFFLE_TEAMS = 'SHUFFLE_TEAMS';
     ...state,
     teams: [newTeams]
   }
-
  }
 
- const shuffleTeams = (state) => {
-
+ const shuffleTeams = (state, newTeams) => {
+  // let {teams} = state;
+  // let newTeams = teams.flat();
+  AsyncStorage.setItem('teams',JSON.stringify(newTeams))
+  return{
+    ...state,
+    teams: newTeams
+  }
  }
 
  const deleteContact = (state, contact) => {
@@ -172,6 +177,8 @@ const loadData = (state, data) => {
         return decreaseTeams(state);
       case RESET_TEAMS:
         return resetTeams(state);
+      case SHUFFLE_TEAMS:
+        return shuffleTeams(state, action.payload.newTeams)
       case LOAD_DATA:
         return loadData(state, action.payload.data);
       default: 
@@ -179,4 +186,4 @@ const loadData = (state, data) => {
    }
  }
 
- export { rootReducer, LOAD_DATA, UPDATE_CONTACT, ADD_CONTACT, DELETE_CONTACT, ADD_PLAYER, REMOVE_PLAYER, CLEAR_PLAYERS, INCREASE_TEAMS, DECREASE_TEAMS, RESET_TEAMS}
+ export { rootReducer, LOAD_DATA, UPDATE_CONTACT, ADD_CONTACT, DELETE_CONTACT, ADD_PLAYER, REMOVE_PLAYER, CLEAR_PLAYERS, INCREASE_TEAMS, DECREASE_TEAMS, RESET_TEAMS, SHUFFLE_TEAMS}
