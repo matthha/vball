@@ -4,12 +4,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedTextInput } from '@/components/ThemedInput';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ScrollView } from 'react-native';
 import EditContactModal from '../edit-contact-modal';
 import TeamsModal from '../teams-modal';
 import TeamsMade from '../teamsMade';
 import { addPlayer, removePlayer } from '../data/Action';
+import { ChevronRight, XLg } from 'react-bootstrap-icons';
 
 export default function TabTwoScreen() {
   const contacts = useSelector((state: any)=>state.myContacts)
@@ -35,11 +36,6 @@ export default function TabTwoScreen() {
       <ThemedView style={styles.centeredView2}>
         <ThemedView style={styles.modalView}>
           {props.children}
-          <Pressable
-            style={[styles.button]}
-            onPress={() => setModalVisible(!modalVisible)}>
-            <ThemedText style={styles.textStyle}>Close</ThemedText>
-          </Pressable>
         </ThemedView>
       </ThemedView>
     </Modal>
@@ -93,44 +89,49 @@ export default function TabTwoScreen() {
         <Pressable style={({ pressed }) => [
       { opacity: pressed ? 0.5 : 1.0 }
     ]} onPress={()=> setSwitched(!switched)}>
-        <View style={{padding:8, backgroundColor:'#11c', borderRadius: 12}}>
-          <ThemedText style={{color:'white', fontSize:22}}>Go to Teams</ThemedText>
+        <View style={{padding:8, borderRadius: 12, borderColor:"#000",borderWidth:2, display:'flex', flexDirection:'row'}}>
+          <ThemedText style={{color:'#000', fontSize:22,lineHeight:20}}>Generate Teams </ThemedText>
+          <ChevronRight style={{color:'#000', fontSize:22,}}></ChevronRight>
         </View>
       </Pressable>
         <Overlay>
           <TeamsModal setVis={setModalVisible}/>
         </Overlay>
       </ThemedView>
+
+
         {/*  Buttons Container  */}
       <View style={styles.cont}>
-      {/* Search Bar */}
-      <View style={{flex:1, flexDirection:'row',flexWrap:'wrap',}}>
-      <ThemedTextInput darkColor={'#000'} style={styles.input} value={search} onChangeText={setSearch}/>
-      {/* Clear Button */}
-      <Pressable style={({ pressed }) => [
-      { opacity: pressed ? 0.5 : 1.0 }
-    ]} onPress={()=> setSearch('')}>
-        <View style={{padding:8,marginRight:22, backgroundColor:'gray', borderRadius: 12}}>
-          <ThemedText style={{color:'black', fontSize:22}}>X</ThemedText>
-        </View>
-      </Pressable>
+
+        {/* Search Bar */}
+        <ThemedView style={styles.inputCont}>
+          <ThemedTextInput darkColor={'#000'} style={styles.input} value={search} onChangeText={setSearch}/>
+          {/* Clear Search */}
+          <Pressable style={({ pressed }) => [
+              { opacity: pressed ? 0.5 : 1.0 }
+            ]} onPress={()=> setSearch('')}>
+              <XLg style={{fontSize:26, lineHeight:40, height:40, color:'#808080', padding:"0 5px"}}/>
+          </Pressable>
+        </ThemedView>
       
     
-      {/* Clear Button */}
-      <Pressable style={({ pressed }) => [
-      { opacity: pressed ? 0.5 : 1.0 }
-    ]} onPress={()=> setModalVisible(!modalVisible)}>
-        <ThemedView style={{padding:8, backgroundColor:'#950000', borderRadius: 12,alignItems:'center'}}>
-          <ThemedText style={{color:'white', fontSize:19}}>CLEAR</ThemedText><ThemedText style={{color:'white', fontSize:19}}>Players?</ThemedText>
-        </ThemedView>
-      </Pressable>
+        {/* Clear Button */}
+        <Pressable style={({ pressed }) => [
+          { opacity: pressed ? 0.5 : 1.0 }
+        ]} onPress={()=> setModalVisible(!modalVisible)}>
+          <ThemedText style={{color:'#0070E0', fontSize:19, textDecorationLine:'underline'}}>Clear All</ThemedText>
+        </Pressable>
       </View>
-      </View>  
       {/* --- End of Buttons --- */}
     
       {/*  List of Contacts */}
       <ThemedView style={{paddingHorizontal:18,paddingBottom:15,flex:1}}>
       <ThemedText>Total Players: {unassigned.length}</ThemedText>
+      <ThemedView style={{display:'flex',flexDirection:'row',paddingHorizontal:13,gap:5,borderBottomColor:'#000',borderBottomWidth:2}}>
+        <ThemedView style={{width:62}}></ThemedView>
+        <ThemedText style={{width:'100%'}}>Name</ThemedText>
+        <ThemedText style={{width:56}}>Rating</ThemedText>
+      </ThemedView>
         <FlatList
           data={filtered}
           ListEmptyComponent={<ThemedView><ThemedText>No contacts yet. Add someone.</ThemedText></ThemedView>}
@@ -146,8 +147,10 @@ export default function TabTwoScreen() {
                 inArray(item.id)
               )
               }>
-              <ThemedView style={[{padding:5,borderRadius:8}, (unassigned.includes(item.id)? {backgroundColor:'#059'}:{})]} darkColor='#666' lightColor='#1cc'>
-              <ThemedText style={[{margin:2},(unassigned.includes(item.id)? {color:'#eee'}:{})]}>{item.first} {item.last}, {item.skill}</ThemedText>
+              <ThemedView style={[{padding:5,borderRadius:8, display:'flex',flexDirection:'row'}, (unassigned.includes(item.id)? {backgroundColor:'#059'}:{})]} darkColor='#666' lightColor='#1cc'>
+                <ThemedView style={{width:62, backgroundColor:'transparent'}}><input style={{width:20, height:20, backgroundColor:'transparent'}} type="checkbox" checked={unassigned.includes(item.id)} /></ThemedView>
+                <ThemedText style={[{margin:2, width:'100%'},(unassigned.includes(item.id)? {color:'#eee'}:{})]}>{item.first} {item.last}</ThemedText>
+                <ThemedText style={[{margin:2, width:56},(unassigned.includes(item.id)? {color:'#eee'}:{})]}>{item.skill}</ThemedText>
               </ThemedView>
               </Pressable>
               </ThemedView>)
@@ -170,11 +173,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cont: {
-    // flex:1,
-    flexDirection:'row',
+    display:'flex',
+    flexDirection:'column',
     gap: 10,
-    // justifyContent:'flex-end',
-    marginHorizontal: 15,
+    paddingHorizontal:15,
+    width:'100%',
   },
   button: {
     backgroundColor:'#333',
@@ -215,15 +218,28 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
+    height:250,
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
+  inputCont:{
+    borderWidth: 1,
+    borderColor: '#000',
+    borderStyle:'solid',
+    borderRadius: 5,
+    backgroundColor:'#fcfcfc',
+    height: 44,
+    padding: 2,
+    display: 'flex',
+    flexDirection: 'row',
+  },
   input: {
-    backgroundColor:'#cef',
+    backgroundColor:'#fcfcfc',
     height: 40,
+    width:'100%',
     marginHorizontal: 12,
-    borderWidth: .5,
+    borderWidth: 0,
     borderRadius:1,
     padding: 10,
   },
