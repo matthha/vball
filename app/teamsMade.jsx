@@ -10,6 +10,7 @@ import { ThemedTextInput as TTInput } from '@/components/ThemedInput';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { addPlayer, decreaseTeams, increaseTeams, removePlayer, resetTeams, shuffleTeams } from './data/Action';
+import { ThemedChevron } from '@/components/ThemedChevron';
 
 export default function TeamsMade(props) {
 
@@ -335,9 +336,12 @@ export default function TeamsMade(props) {
          <Pressable style={({ pressed }) => [
             { opacity: pressed ? 0.5 : 1.0 }
             ]} onPress={()=> props.setSwitched(!props.switched)}>
-            <ThemedView style={{padding:8, backgroundColor:'#11c', borderRadius: 12}}>
-               <TT style={{color:'white', fontSize:22}}>Go to Players</TT>
-            </ThemedView>
+            <ThemedView style={{padding:8, borderRadius: 12, borderColor:"#000",borderWidth:2, display:'flex', flexDirection:'row'}}>
+          <ThemedText style={{fontSize:22, lineHeight:20}} darkColor='white'>Select Players </ThemedText>
+          {/* <ChevronRight style={{fontSize:22,}}></ChevronRight> */}
+          {/* Made this Themed component, but couldn't figure out how to make it accept the style that's being written here so put it into the component. */}
+          <ThemedChevron style={{fontSize:22,}}></ThemedChevron>
+        </ThemedView>
          </Pressable>      
       </ThemedView>
       {/*  Buttons Container  */}

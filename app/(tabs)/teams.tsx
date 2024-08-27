@@ -11,6 +11,7 @@ import TeamsModal from '../teams-modal';
 import TeamsMade from '../teamsMade';
 import { addPlayer, removePlayer } from '../data/Action';
 import { ChevronRight, XLg } from 'react-bootstrap-icons';
+import { ThemedChevron } from '@/components/ThemedChevron';
 
 export default function TabTwoScreen() {
   const contacts = useSelector((state: any)=>state.myContacts)
@@ -89,10 +90,12 @@ export default function TabTwoScreen() {
         <Pressable style={({ pressed }) => [
       { opacity: pressed ? 0.5 : 1.0 }
     ]} onPress={()=> setSwitched(!switched)}>
-        <View style={{padding:8, borderRadius: 12, borderColor:"#000",borderWidth:2, display:'flex', flexDirection:'row'}}>
-          <ThemedText style={{color:'#000', fontSize:22,lineHeight:20}}>Generate Teams </ThemedText>
-          <ChevronRight style={{color:'#000', fontSize:22,}}></ChevronRight>
-        </View>
+        <ThemedView style={{padding:8, borderRadius: 12, borderColor:"#000",borderWidth:2, display:'flex', flexDirection:'row'}}>
+          <ThemedText style={{fontSize:22, lineHeight:20}} darkColor='white'>Generate Teams </ThemedText>
+          {/* <ChevronRight style={{fontSize:22,}}></ChevronRight> */}
+          {/* Made this Themed component, but couldn't figure out how to make it accept the style that's being written here so put it into the component. */}
+          <ThemedChevron style={{fontSize:22,}}></ThemedChevron>
+        </ThemedView>
       </Pressable>
         <Overlay>
           <TeamsModal setVis={setModalVisible}/>
@@ -148,9 +151,15 @@ export default function TabTwoScreen() {
               )
               }>
               <ThemedView style={[{padding:5,borderRadius:8, display:'flex',flexDirection:'row'}, (unassigned.includes(item.id)? {backgroundColor:'#059'}:{})]} darkColor='#666' lightColor='#1cc'>
-                <ThemedView style={{width:62, backgroundColor:'transparent'}}><input style={{width:20, height:20, backgroundColor:'transparent'}} type="checkbox" checked={unassigned.includes(item.id)} /></ThemedView>
-                <ThemedText style={[{margin:2, width:'100%'},(unassigned.includes(item.id)? {color:'#eee'}:{})]}>{item.first} {item.last}</ThemedText>
-                <ThemedText style={[{margin:2, width:56},(unassigned.includes(item.id)? {color:'#eee'}:{})]}>{item.skill}</ThemedText>
+                <ThemedView style={{width:62, backgroundColor:'transparent'}}>
+                  <input style={{width:20, height:20, backgroundColor:'transparent'}} type="checkbox" checked={unassigned.includes(item.id)} />
+                </ThemedView>
+                <ThemedText style={[{margin:2, width:'100%'},(unassigned.includes(item.id)? {color:'#eee'}:{})]}>
+                  {item.first} {item.last}
+                </ThemedText>
+                <ThemedText style={[{margin:2, width:56},(unassigned.includes(item.id)? {color:'#eee'}:{})]}>
+                  {item.skill}
+                </ThemedText>
               </ThemedView>
               </Pressable>
               </ThemedView>)
